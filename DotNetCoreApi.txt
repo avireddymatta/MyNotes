@@ -1,5 +1,9 @@
 "DotNetCore 6 Api Notes" 
 
+dotnet ef migrations add sometext -p DBContextProjectName -s MainStartUpProjectName
+dotnet sln add ProjectName
+dotnet add Reference ../ProjectPath (current path should be in Project where reference needed)
+
 Middleware Exceptions Service:
 ---------------------
 # Constructor Parameters: RequestDelegate next, ILogger<ExceptionMiddleWare> logger, IHostEnvironment env
@@ -110,3 +114,45 @@ builder.Services.AddControllers(opt =>
   
   
  
+# IHttpContextAccessor can be used for Loading Current user data
+
+# For MultiMapping Models, use ProjectTo (AutoMapper) rather than Include, ThenInclude ( difference is only includes DTO Columns at SQL)
+  ProjectTo<DTO>(_mapper.ConfigurationProvider)
+  
+# services.Config<Model>(config.GetSection('')) can be used to map values from config to a class
+  Access: IOptions<Model> data
+  
+# SignalR:
+  To Create Group, Override OnConnectedAsync method
+  
+  using Context get current httpContext, ConnectionId ( Groups.AddToGroupAsync)
+  from current httpContext get Query Params
+  
+  SignalR Authentication
+  
+  builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+	.AddJwtBearer(opt =>
+	{
+		
+		opt.Events = new JwtBearerEvents
+		{
+			OnMessageReceived = (context) => 
+			{
+				var accessToken = context.Request.Query["accessToken"];
+				var path = context.HttpContext.Request.Path;
+				
+				if(!string.IsNullOrEmpty(accessToken) && path.StartsWithSegements("/chat"))
+				{
+					context.TOken = accessToken;
+				}
+				return Task.CompletedTask;
+				
+			
+			}
+		
+		}
+	});
+
+
+
+

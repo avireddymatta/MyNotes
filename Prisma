@@ -1,0 +1,9 @@
+npx prisma init --datasource-provider
+
+npx prisma db pull/push
+
+npx prisma migrate dev --name somenameofmigration
+
+npx prisma format ( fixes any model issues in schema.prisma)
+
+npx prisma generate
